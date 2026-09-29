@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "cloud-image/debian-13"
+
+  config.vm.define "apintusS" do |server|
+    server.vm.hostname = "apintusS"
+    server.vm.network "private_network", ip: "192.168.56.110"
+
+    server.vm.provider "libvirt" do |lv|
+      lv.uri = "qemu:///system"
+      lv.memory = 1024
+      lv.cpus = 1
+    end
+
+    server.vm.provision "shell", path: "scripts/install-k3s-server.sh"
+  end
+
+  config.vm.define "apintusSW" do |worker|
+    worker.vm.hostname = "apintusSW"
+    worker.vm.network "private_network", ip: "192.168.56.111"
+
+    worker.vm.provider "libvirt" do |lv|
+      lv.uri = "qemu:///system"
+      lv.memory = 1024
+      lv.cpus = 1
+    end
+
+    worker.vm.provision "shell", path: "scripts/install-k3s-worker.sh"
+  end
+
+end

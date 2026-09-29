@@ -1,0 +1,15 @@
+# Service : point d'accès stable vers les pods, exposé hors du cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: iot-service
+  namespace: dev
+spec:
+  type: NodePort                 # ouvre un port sur les nodes -> accessible de l'extérieur
+  selector:
+    app: wil42-playground        # envoie le trafic aux pods ayant ce label
+  ports:
+    - protocol: TCP
+      nodePort: 30888            # port ouvert sur les nodes (30000-32767), mappé sur 8888 par k3d
+      port: 8888                 # port du Service dans le cluster
+      targetPort: 8888           # port du conteneur visé

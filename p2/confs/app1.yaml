@@ -1,0 +1,38 @@
+apiVersion: apps/v1 # ceci est la version de l'API pour les déploiements
+kind: Deployment # ceci est le type de ressource que nous voulons créer
+metadata: #
+  name: app-one # 
+  namespace: inception-of-things
+  labels:
+    app: app-one
+spec: # 
+  replicas: 1  # ceci indique le nombre de pods que nous voulons exécuter pour cette application
+  selector: # ceci est le sélecteur de labels qui permet de choisir les pods à gérer
+    matchLabels: # ceci est le label que nous avons défini pour nos pods
+      app: app-one
+  template: # ceci est le modèle de pod que nous voulons créer
+    metadata:
+      labels:
+        app: app-one
+    spec:
+      containers: # ceci est la liste des conteneurs que nous voulons exécuter dans nos pods
+        - name: hello-kubernetes
+          image: "paulbouwer/hello-kubernetes:1.10.1"
+          env:
+          - name: MESSAGE
+            value: "Hello from app1."
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1 # ceci est la version de l'API pour les services
+kind: Service # service sert à exposer notre application à l'intérieur du cluster Kubernetes
+metadata:
+  name: app-one-service
+  namespace: inception-of-things
+spec:
+  type: ClusterIP # ClusterIP est le type de service par défaut, il crée une IP interne pour le service
+  selector: 
+    app: app-one
+  ports:
+  - port: 80
+    targetPort: 8080

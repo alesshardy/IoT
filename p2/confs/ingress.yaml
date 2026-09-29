@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1 # 
+kind: Ingress # ingress est un objet qui permet de gérer l'accès externe aux services dans un cluster Kubernetes, généralement HTTP.
+metadata:
+  name: apps-ingress
+  namespace: inception-of-things
+spec:
+  rules:
+  - host: app1.com # ceci est le nom d'hôte que nous voulons utiliser pour accéder à notre application
+    http: # ceci est la section qui définit les règles HTTP pour l'ingress
+      paths:
+      - path: /
+        pathType: Prefix
+        backend: 
+            name: app-one-service
+            port:
+              number: 80
+  - host: app2.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-two-service
+            port:
+              number: 80
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app-three-service
+            port:
+              number: 80
+

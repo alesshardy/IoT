@@ -1,0 +1,24 @@
+# Objet Argo CD : dit quel repo surveiller et où déployer son contenu
+# Bonus : même Application que la p3, seul le repo change (GitLab local au lieu de GitHub)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wil42-playground
+  namespace: argocd              # l'Application vit dans le namespace d'Argo CD
+spec:
+  project: default
+  source:
+    # repo sur le GitLab du cluster, joint via le DNS interne :
+    # <service>.<namespace>.svc.cluster.local:<port> / <groupe>/<projet>.git
+    # 8181 = port de Workhorse (gère le git clone/fetch en HTTP)
+    # accès au repo privé grâce au Secret gitlab-repo-creds
+    repoURL: http://gitlab-webservice-default.gitlab.svc.cluster.local:8181/mvachera/iot-mvachera.git
+    targetRevision: HEAD         # suit le dernier commit
+    path: manifests              # dossier contenant deployment + service
+  destination:
+    server: https://kubernetes.default.svc   # le cluster où tourne Argo CD
+    namespace: dev               # namespace où l'appli est déployée
+  syncPolicy:
+    automated:                   # sync automatique dès qu'un changement est poussé
+      prune: true                # supprime du cluster ce qui a disparu du repo
+      selfHeal: true             # annule les modifs manuelles : le repo reste la source de vérité

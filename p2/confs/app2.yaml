@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-two
+  namespace: inception-of-things
+  labels:
+    app: app-two
+spec:
+  replicas: 3 # definir 3 pods permet de garantir la haute disponibilité de l'application. Si un pod échoue, les autres continueront à fonctionner.
+  selector:
+    matchLabels:
+      app: app-two
+  template:
+    metadata:
+      labels:
+        app: app-two
+    spec:
+      containers:
+        - name: hello-kubernetes
+          image: "paulbouwer/hello-kubernetes:1.10.1"
+          env:
+          - name: MESSAGE
+            value: "Hello from app2."
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-two-service
+  namespace: inception-of-things
+spec:
+  type: ClusterIP
+  selector:
+    app: app-two
+  ports:
+  - port: 80
+    targetPort: 8080

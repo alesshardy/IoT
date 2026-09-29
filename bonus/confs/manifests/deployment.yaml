@@ -1,0 +1,23 @@
+# Deployment : décrit l'appli à lancer et maintient le nombre de pods voulu
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wil42-playground
+  namespace: dev
+  labels:
+    app: wil42-playground
+spec:
+  replicas: 1                    # un seul pod
+  selector:
+    matchLabels:
+      app: wil42-playground      # gère les pods portant ce label
+  template:                      # modèle des pods à créer
+    metadata:
+      labels:
+        app: wil42-playground    # label posé sur les pods (utilisé aussi par le Service)
+    spec:
+      containers:
+      - name: wil42-playground
+        image: wil42/playground:v1   # image Docker Hub : changer le tag v1 <-> v2 pour la démo
+        ports:
+        - containerPort: 8888    # port d'écoute de l'appli dans le conteneur

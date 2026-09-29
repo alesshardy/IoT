@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "cloud-image/debian-13"
+
+  # Synchronise le dossier du projet vers /vagrant DANS la VM
+  # (necessaire car libvirt ne monte pas /vagrant automatiquement,
+  #  contrairement a VirtualBox)
+  config.vm.synced_folder ".", "/vagrant", type: "rsync"
+
+  config.vm.define "kammiS" do |server|
+    server.vm.hostname = "kammiS"
+    server.vm.network "private_network", ip: "192.168.56.110"
+
+    server.vm.provider "libvirt" do |lv|
+      lv.uri = "qemu:///system"
+      lv.memory = 2048
+      lv.cpus = 2
+    end
+
+    server.vm.provision "shell", path: "scripts/install-k3s.sh"
+  end
+
+end
